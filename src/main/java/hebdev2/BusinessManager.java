@@ -21,9 +21,8 @@ public class BusinessManager {
 	
 public Item findItem(String ItemId) throws Exception {
 		
-		log.info("BusinessManager::findItem started");
+		log.info("BusinessManager::findItemById started");
 		
-
 		Item item = DataManager.getInstance().findItemById(ItemId);
 		
 		if (item == null) {
@@ -34,12 +33,17 @@ public Item findItem(String ItemId) throws Exception {
 	}
 
 	public List<Item> findItems() {
+		
+		log.info("BusinessManager::findAllItems started");
 	
 		return DataManager.getInstance().findAllItems();
 
 	}
 
 	public Item addItem(Item item) {
+		
+		log.info("BusinessManager::addItem started");
+		
 		Item newItem = DataManager.getInstance().instertItem(item);
 		return newItem;
 	}
@@ -55,8 +59,10 @@ public Item findItem(String ItemId) throws Exception {
 	}
 
 	public List<Item> findItemsByString(String string) {
+		
+		log.info("BusinessManager::findItemByString started");
+		
 		return DataManager.getInstance().findItemsByString(string);
-		//return null;
 	}
 
 }

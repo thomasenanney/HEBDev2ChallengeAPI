@@ -86,10 +86,7 @@ public class ItemsResource {
 		
 		try {
 			List<Item> items = BusinessManager.getInstance().findItemsByString(string);
-			ItemsHolder itemsHolder = new ItemsHolder();
-			
-			itemsHolder.setItems(items);
-			return Response.status(Response.Status.OK).entity(itemsHolder).build();
+			return Response.status(Response.Status.OK).entity(items).build();
 		}
 		catch (Exception e) {
 			
@@ -110,15 +107,13 @@ public class ItemsResource {
 	})
 	public Response getItem() {
 		
-		log.info("ItemsResource::getItem started");
+		log.info("ItemsResource::findAllItems started");
 		try {
 			List<Item> items = BusinessManager.getInstance().findItems();
-			ItemsHolder itemsHolder = new ItemsHolder();
-			
-			itemsHolder.setItems(items);
-			return Response.status(Response.Status.OK).entity(itemsHolder).build();
+			return Response.status(Response.Status.OK).entity(items).build();
 		}
 		catch (Exception e) {
+			System.err.print(e);
 			
 		}
 		return Response.status(Response.Status.BAD_REQUEST)
@@ -153,6 +148,8 @@ public class ItemsResource {
 				.build();		
 	}
 	
+	//toDo
+	
 	@PUT
 	@Path("/UpdateItem/{ItemId}")
 	@Consumes({ MediaType.APPLICATION_JSON })
@@ -162,14 +159,6 @@ public class ItemsResource {
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Success: { Item profile }"),
     @ApiResponse(code = 400, message = "Failed: {\"error\":\"error description\", \"status\":\"FAIL\"}") })
 	public Response updateItem(@PathParam("ItemId") String itemId, String jsonString) {
-
-		/*
-		 * { 
-		 * 
-		 * "description":"Ted Nanney"
-		 * 
-		 * } }
-		 */
 		
 		String description;
 		
@@ -205,7 +194,7 @@ public class ItemsResource {
 	}
 
 	
-	
+	//todo
 	@DELETE
 	@Path("/DeleteItem/{ItemId}")
 	@Consumes({ MediaType.APPLICATION_JSON })

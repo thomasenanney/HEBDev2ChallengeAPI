@@ -5,12 +5,9 @@ import java.io.Serializable;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-@XmlRootElement(name = "user")
+@XmlRootElement(name = "items")
 
 public class Item implements Serializable{
-	/*
-	 * 
-	 */
 	
 	private static final long serialVersionUID = 1;
 	
@@ -114,7 +111,6 @@ public class Item implements Serializable{
 	}
 	
 	public boolean checkItemForString(Item item, String string){
-		System.out.println("item.java 117 item string" + item + string);
 		if(item.getCost().contains(string) || item.getId().contains(string)
 				|| item.getDescription().contains(string)
 				|| item.getLastSold().contains(string)
