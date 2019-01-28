@@ -187,27 +187,7 @@ public class DataManager {
 		log.info("DataManager::deleteItem started itemId: " + itemId);
 
 		
-		List<Item> items = new ArrayList<Item>();
-
-		try {
-
-
-			DBCursor cursor = ItemCollection.find();
-
-			if (cursor != null) {
-
-				while (cursor.hasNext()) {
-
-					BasicDBObject doc = (BasicDBObject) cursor.next();
-
-					Item item = mapItemFromdDBObject(doc);
-
-					items.add(item);
-				}
-			}
-		} catch (Exception e) {
-
-		}
+		List<Item> items = this.findAllItems();
 		
 		if (itemId == null)
 			return null;

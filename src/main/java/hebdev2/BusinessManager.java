@@ -78,4 +78,17 @@ public Item findItem(String ItemId) throws Exception {
 		DataManager.getInstance().deleteCollection();		
 	}
 
+	public List<Item> addItems(List<Item> items) {
+		log.info("BusinessManager::addItems started");
+		
+		List<Item> itemsToReturn = new ArrayList<Item>();
+				
+		for (Item item : items) {
+			Item newItem = DataManager.getInstance().instertItem(item);
+			itemsToReturn.add(newItem);
+		}
+	
+		return itemsToReturn;
+	}
+
 }

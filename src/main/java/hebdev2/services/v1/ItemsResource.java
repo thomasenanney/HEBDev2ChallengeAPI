@@ -167,6 +167,33 @@ public class ItemsResource {
 				.build();		
 	}
 	
+	@POST
+	@Path("/CreateItems")
+	@Consumes({ MediaType.APPLICATION_JSON })
+	@Produces({ MediaType.APPLICATION_JSON })
+	@ApiOperation(value = "Create a new Items from List",
+	notes = "This API creates a new Item if the Itemdescription does not exist"
+			+ "<p><u>Input Parameters</u><ul><li><b>new Item object</b> is required</li></ul>")
+	@ApiResponses(value = {
+			@ApiResponse(code = 201, message = "Sucess: { Item profile }"),
+			@ApiResponse(code = 400, message = "Failed: {\"error\":\"error description\", \"status\":\"FAIL\"}")
+	})
+	public Response createItems(@ApiParam(value = "New Item", required = true, defaultValue = "\"{\"description\":\"Ted Nanney\"}\"", allowableValues = "", allowMultiple = false)
+		List<Item> items) {
+		
+		log.info("ItemsResource::createItems started");
+		try {
+			List<Item> itemsToReturn = BusinessManager.getInstance().addItems(items);
+			return Response.status(Response.Status.CREATED).entity(itemsToReturn).build();
+		}
+		catch (Exception e) {
+			
+		}
+		return Response.status(Response.Status.BAD_REQUEST)
+				.entity("{\"error\":\"Could not create Item\", \"status\":\"FAIL\"}")
+				.build();		
+	}
+	
 	//toDo
 	
 	@PUT
