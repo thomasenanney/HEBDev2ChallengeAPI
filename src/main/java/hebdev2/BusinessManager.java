@@ -1,5 +1,6 @@
 package hebdev2;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -54,15 +55,27 @@ public Item findItem(String ItemId) throws Exception {
 		
 	}
 	
-	public void deleteItem(String ItemId) {		
-		return;		
+	public void deleteItem(String itemId) {	
+		log.info("BusinessManager::deleteItem started itemId: " + itemId);
+		DataManager.getInstance().deleteItem(itemId);	
 	}
 
 	public List<Item> findItemsByString(String string) {
 		
 		log.info("BusinessManager::findItemByString started");
 		
-		return DataManager.getInstance().findItemsByString(string);
+		List<Item> items = DataManager.getInstance().findAllItems();
+		List<Item> itemsToReturn = new ArrayList<Item>();
+		for (Item itemInItems : items){
+			if(itemInItems.checkItemForString(itemInItems, string)){
+				itemsToReturn.add(itemInItems);
+			}
+		}
+		return itemsToReturn;
+	}
+
+	public void deleteAllItems() {
+		DataManager.getInstance().deleteCollection();		
 	}
 
 }

@@ -11,6 +11,17 @@ public class Item implements Serializable{
 	
 	private static final long serialVersionUID = 1;
 	
+	@XmlElement(name = "objectId")
+	private String objectId;
+	
+	public String getObjectId() {
+		return objectId;
+	}
+
+	public void setObjectId(String objectId) {
+		this.objectId = objectId;
+	}
+
 	@XmlElement(name = "id")
 	private String id;
 	

@@ -53,9 +53,12 @@ public class DataManager {
 	
 	public Item instertItem(Item item) {
 		
+		log.info("DataManager::insertItem started item: " + item);
+		
 		//instert item into collection
 		BasicDBObject doc = new BasicDBObject();
 		
+		//doc.put("_id", item.getObjectId());
 		doc.put("id", item.getId());
 		doc.put("description", item.getDescription());
 		doc.put("lastSold", item.getLastSold());
@@ -68,7 +71,7 @@ public class DataManager {
 		
 		ItemCollection.insert(doc);
 		
-		item.setId(doc.get("id").toString());
+		item.setObjectId(doc.get("_id").toString());
 		
 		return item;
 	}
@@ -78,6 +81,7 @@ public class DataManager {
 		//map the object returned from db to an item object
 		Item item = new Item();
 
+		item.setObjectId((String) dbObject.get("_id").toString());
 		item.setId((String) dbObject.get("id").toString());
 		item.setDescription((String) dbObject.get("description"));
 		item.setLastSold((String) dbObject.get("lastSold"));
@@ -93,13 +97,16 @@ public class DataManager {
 	
 	
 	// Find Item by Id
-	public Item findItemById(String ItemIdString) {
+	public Item findItemById(String itemIdString) {
 		
-		if (ItemIdString == null)
+		log.info("DataManager::findItemById started itemId: " + itemIdString);
+
+		
+		if (itemIdString == null)
 			return null;
 	
 		try {
-			DBObject searchById = new BasicDBObject("_id", new ObjectId(ItemIdString));
+			DBObject searchById = new BasicDBObject("_id", new ObjectId(itemIdString));
 
 			DBObject ItemObject = ItemCollection.findOne(searchById);
 
@@ -117,44 +124,10 @@ public class DataManager {
 	
 	}
 	
-	// Find item by string
-		public List<Item> findItemsByString(String string) {
-		
-			if (string == null)
-				return null;
-
-			List<Item> items = new ArrayList<Item>();
-
-			//get all items from db
-			//not the best way, a better way would be to perform search in db
-			try {
-
-				DBCursor cursor = ItemCollection.find();
-
-				if (cursor != null) {
-
-					while (cursor.hasNext()) {
-
-						BasicDBObject doc = (BasicDBObject) cursor.next();
-
-						Item item = mapItemFromdDBObject(doc);
-						
-						items.add(item);
-					}
-				}
-			} catch (Exception e) {
-				System.err.println(e);
-			}
-			List<Item> itemsToReturn = new ArrayList<Item>();
-			for (Item itemInItems : items){
-				if(itemInItems.checkItemForString(itemInItems, string)){
-					itemsToReturn.add(itemInItems);
-				}
-			}
-			return itemsToReturn;
-		}
-	
 	public List<Item> findAllItems() {
+		
+		log.info("DataManager::findAllItems started");
+
 
 		List<Item> items = new ArrayList<Item>();
 
@@ -201,5 +174,65 @@ public class DataManager {
 
 
 		return findItemById(ItemId);
+	}
+
+	public void deleteCollection() {
+		log.info("DataManager::deleteCollection started");
+
+		hebdev2DB.getCollection("Items").drop();
+	}
+
+	public Item deleteItem(String itemId) {
+		
+		log.info("DataManager::deleteItem started itemId: " + itemId);
+
+		
+		List<Item> items = new ArrayList<Item>();
+
+		try {
+
+
+			DBCursor cursor = ItemCollection.find();
+
+			if (cursor != null) {
+
+				while (cursor.hasNext()) {
+
+					BasicDBObject doc = (BasicDBObject) cursor.next();
+
+					Item item = mapItemFromdDBObject(doc);
+
+					items.add(item);
+				}
+			}
+		} catch (Exception e) {
+
+		}
+		
+		if (itemId == null)
+			return null;
+		
+		String objectId = "";
+		for(Item item : items){
+			if(item.getId().equals(itemId)){
+				objectId = item.getObjectId();
+			}
+		}
+		if (objectId == null)
+			return null;
+	
+		try {
+			DBObject searchById = new BasicDBObject("_id", new ObjectId(objectId));
+
+			DBObject ItemObject = ItemCollection.findOne(searchById); 
+
+			ItemCollection.remove(ItemObject);
+
+		} catch (Exception e) {
+			log.error("DBManager::findItemById Exception e=", e);
+		}
+
+		return null;
+
 	}
 }

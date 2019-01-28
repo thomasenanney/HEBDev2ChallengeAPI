@@ -2,6 +2,7 @@ package hebdev2.services.v1;
 
 import java.util.List;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -10,6 +11,7 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -31,6 +33,15 @@ public class ItemsResource {
 	
 	private static final Logger log = Logger.getLogger(ItemsResource.class.getName());
 	
+	@Context
+    private HttpServletResponse servletResponse;
+
+    private void allowCrossDomainAccess() {
+        if (servletResponse != null){
+            servletResponse.setHeader("Access-Control-Allow-Origin", "*");
+        }
+    }
+	
 	@GET
 	@Path("/FindItemById/{ItemId}")
 	@Produces(MediaType.APPLICATION_JSON)
@@ -45,6 +56,9 @@ public class ItemsResource {
 			@PathParam("ItemId") String ItemId) {
 		
 		log.info("ItemsResource::getItemById started ItemId=" + ItemId);
+		
+		allowCrossDomainAccess();
+
 		if (ItemId == null){
 			return Response.status(Response.Status.BAD_REQUEST)
 					.entity("{\"error\":\"Empty ItemId\", \"status\":\"FAIL\"}")
@@ -78,6 +92,10 @@ public class ItemsResource {
 			@PathParam("string") String string) {
 		
 		log.info("ItemsResource::getItemsByString started string=" + string);
+		
+		allowCrossDomainAccess();
+
+		
 		if (string == null){
 			return Response.status(Response.Status.BAD_REQUEST)
 					.entity("{\"error\":\"Empty ItemId\", \"status\":\"FAIL\"}")
@@ -108,6 +126,7 @@ public class ItemsResource {
 	public Response getItem() {
 		
 		log.info("ItemsResource::findAllItems started");
+		allowCrossDomainAccess();
 		try {
 			List<Item> items = BusinessManager.getInstance().findItems();
 			return Response.status(Response.Status.OK).entity(items).build();
@@ -203,11 +222,12 @@ public class ItemsResource {
     notes = "This API deletes the Item")
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Success: {  }"),
     @ApiResponse(code = 400, message = "Failed: {\"error\":\"error description\", \"status\":\"FAIL\"}") })
-	public Response deleteItem(@PathParam("ItemId") String ItemId) {
-
+	public Response deleteItem(@PathParam("ItemId") String itemId) {
 		
+		log.info("ItemsResource::deleteItem started ItemId: " + itemId);
+
 		try {
-			BusinessManager.getInstance().deleteItem(ItemId);
+			BusinessManager.getInstance().deleteItem(itemId);
 		
 			return Response.status(Response.Status.OK).entity("{}").build();
 		}
@@ -218,8 +238,6 @@ public class ItemsResource {
 		return Response.status(Response.Status.BAD_REQUEST)
 				.entity("{\"error\":\"Could Not Update Item\", \"status\":\"FAIL\"}")
 				.build();
-
-
 		
 	}
 }
