@@ -41,20 +41,20 @@ public class ItemsResource {
     }
 	
 	
-	@GET
-	@Path("/FindItemsByString/{string}")
+	@POST
+	@Path("/FindItemsByString")
+	@Consumes({ MediaType.APPLICATION_JSON })
 	@Produces(MediaType.APPLICATION_JSON)
 	@ApiOperation(value = "Finds all Items matching string",
-			notes = "This API retrieves the public information for the Item (Private info is returned if this is the auth Item "
-					+ "<p><u>Input Parameters</u><ul><li><b>ItemId</b> is required</li></ul>")
+			notes = "This API retrieves the public information for the Item")
 	@ApiResponses(value = {
 			@ApiResponse(code = 200, message = "Sucess: { Item profile }"),
 			@ApiResponse(code = 400, message = "Failed: {\"error\":\"error description\", \"status\":\"FAIL\"}")
 	})
 	public Response getItemsByString(@ApiParam(value = "string", required = true, defaultValue = "23456", allowableValues = "", allowMultiple = false)
-			@PathParam("string") String string) {
+			String string) {
 		
-		log.info("ItemsResource::getItemsByString started string=" + string);
+		log.info("ItemsResource::getItemsByString started string = " + string);
 		
 		allowCrossDomainAccess();
 
@@ -74,6 +74,36 @@ public class ItemsResource {
 		}
 		return Response.status(Response.Status.BAD_REQUEST)
 				.entity("{\"error\":\"Could not find Item\", \"status\":\"FAIL\"}")
+				.build();		
+	}
+	
+
+	@POST
+	@Path("/CreateItem")
+	@Consumes({ MediaType.APPLICATION_JSON })
+	@Produces({ MediaType.APPLICATION_JSON })
+	@ApiOperation(value = "Create a new Item",
+	notes = "This API creates a new Item if the Itemdescription does not exist"
+			+ "<p><u>Input Parameters</u><ul><li><b>new Item object</b> is required</li></ul>")
+	@ApiResponses(value = {
+			@ApiResponse(code = 201, message = "Sucess: { Item profile }"),
+			@ApiResponse(code = 400, message = "Failed: {\"error\":\"error description\", \"status\":\"FAIL\"}")
+	})
+	public Response createItem(@ApiParam(value = "New Item", required = true, defaultValue = "\"{\"description\":\"Ted Nanney\"}\"", allowableValues = "", allowMultiple = false)
+		Item item) {
+		
+		log.info("ItemsResource::createItem started");
+		
+		allowCrossDomainAccess();
+		try {
+			Item newItem = BusinessManager.getInstance().addItem(item);
+			return Response.status(Response.Status.CREATED).entity(newItem).build();
+		}
+		catch (Exception e) {
+			
+		}
+		return Response.status(Response.Status.BAD_REQUEST)
+				.entity("{\"error\":\"Could not create Item\", \"status\":\"FAIL\"}")
 				.build();		
 	}
 	
@@ -103,34 +133,6 @@ public class ItemsResource {
 				.build();		
 	}
 	
-	@POST
-	@Path("/CreateItem")
-	@Consumes({ MediaType.APPLICATION_JSON })
-	@Produces({ MediaType.APPLICATION_JSON })
-	@ApiOperation(value = "Create a new Item",
-	notes = "This API creates a new Item if the Itemdescription does not exist"
-			+ "<p><u>Input Parameters</u><ul><li><b>new Item object</b> is required</li></ul>")
-	@ApiResponses(value = {
-			@ApiResponse(code = 201, message = "Sucess: { Item profile }"),
-			@ApiResponse(code = 400, message = "Failed: {\"error\":\"error description\", \"status\":\"FAIL\"}")
-	})
-	public Response createItem(@ApiParam(value = "New Item", required = true, defaultValue = "\"{\"description\":\"Ted Nanney\"}\"", allowableValues = "", allowMultiple = false)
-		Item item) {
-		
-		log.info("ItemsResource::createItem started");
-		
-		allowCrossDomainAccess();
-		try {
-			Item newItem = BusinessManager.getInstance().addItem(item);
-			return Response.status(Response.Status.CREATED).entity(newItem).build();
-		}
-		catch (Exception e) {
-			
-		}
-		return Response.status(Response.Status.BAD_REQUEST)
-				.entity("{\"error\":\"Could not create Item\", \"status\":\"FAIL\"}")
-				.build();		
-	}
 	
 	@POST
 	@Path("/CreateItems")
