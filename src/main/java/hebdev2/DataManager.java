@@ -51,7 +51,7 @@ public class DataManager {
 		
 	}
 	
-	public Item instertItem(Item item) {
+	public Item addItem(Item item) {
 		
 		log.info("DataManager::insertItem started item: " + item);
 		
@@ -81,6 +81,43 @@ public class DataManager {
 		item.setObjectId(doc.get("_id").toString());
 		
 		return item;
+	}
+	
+public List<Item> addItems(List<Item> items) {
+		
+		log.info("DataManager::insertItems started");
+		
+		List<Item> itemsToReturn = new ArrayList<Item>();
+		List<Item> itemsExisting = this.findAllItems();
+		for(Item item : items){
+			for(Item itemToCheck : itemsExisting) {
+				if (item.getId().equals(itemToCheck.getId())){
+					this.deleteItem(item.getId());
+				}
+			}
+		
+		
+			//instert item into collection
+			BasicDBObject doc = new BasicDBObject();
+			
+			//doc.put("_id", item.getObjectId());
+			doc.put("id", item.getId());
+			doc.put("description", item.getDescription());
+			doc.put("lastSold", item.getLastSold());
+			doc.put("shelfLife", item.getShelfLife());
+			doc.put("department", item.getDepartment());
+			doc.put("price", item.getPrice());
+			doc.put("unit", item.getUnit());
+			doc.put("xFor", item.getXFor());
+			doc.put("cost", item.getCost());
+			
+			ItemCollection.insert(doc);
+			
+			item.setObjectId(doc.get("_id").toString());
+			
+			itemsToReturn.add(item);
+		}
+		return itemsToReturn;
 	}
 	
 	public Item mapItemFromdDBObject(DBObject dbObject) {

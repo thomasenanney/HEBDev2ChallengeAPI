@@ -20,9 +20,7 @@ public class BusinessManagerTests extends TestCase {
 	protected void tearDown() throws Exception {
 		super.tearDown();
 		BusinessManager.getInstance().deleteAllItems();
-		for(Item item : this.items){
-			DataManager.getInstance().instertItem(item);
-		}
+		DataManager.getInstance().addItems(this.items);
 	}
 	
 	public void testInstertItem() {

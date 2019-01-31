@@ -38,7 +38,7 @@ public class BusinessManager {
 		
 		log.info("BusinessManager::addItem started");
 		
-		Item newItem = DataManager.getInstance().instertItem(item);
+		Item newItem = DataManager.getInstance().addItem(item);
 		return newItem;
 	}
 	
@@ -67,15 +67,8 @@ public class BusinessManager {
 
 	public List<Item> addItems(List<Item> items) {
 		log.info("BusinessManager::addItems started");
-		
-		List<Item> itemsToReturn = new ArrayList<Item>();
-				
-		for (Item item : items) {
-			Item newItem = DataManager.getInstance().instertItem(item);
-			itemsToReturn.add(newItem);
-		}
 	
-		return itemsToReturn;
+		return DataManager.getInstance().addItems(items);
 	}
 
 	public List<Item> addItemsFromFile(File file) {
