@@ -1,7 +1,6 @@
 # HEB Developer 2 Challenge API
 
-This project was created to satisfy the backend requirements of the challenge issued by HEB for Developer 2s. This project creates a Java API to perform CRUD operations on a database of grocery Items. The specific operations available are: CreateItem, CreateItems, DeleteItem,
-FindAllItems, FindItemsByString and UpdateItem.
+This project was created to satisfy the backend requirements of the challenge issued by HEB for Developer 2s. This project creates a Java API to perform CRUD operations on a database of grocery Items. The specific operations available are: CreateItem, CreateItems, CreateItemsFromFile, DeleteItem, FindAllItems, FindItemsByString and UpdateItem.
 
 
 ## Getting Started
