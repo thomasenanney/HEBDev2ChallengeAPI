@@ -48,7 +48,7 @@ public class ItemsResource {
 	@ApiOperation(value = "Finds all Items matching string",
 			notes = "This API retrieves the public information for the Item")
 	@ApiResponses(value = {
-			@ApiResponse(code = 200, message = "Sucess: { Item profile }"),
+			@ApiResponse(code = 200, message = "Sucess: { Items profile }"),
 			@ApiResponse(code = 400, message = "Failed: {\"error\":\"error description\", \"status\":\"FAIL\"}")
 	})
 	public Response getItemsByString(@ApiParam(value = "string", required = true, defaultValue = "23456", allowableValues = "", allowMultiple = false)
@@ -61,7 +61,7 @@ public class ItemsResource {
 		
 		if (string == null){
 			return Response.status(Response.Status.BAD_REQUEST)
-					.entity("{\"error\":\"Empty ItemId\", \"status\":\"FAIL\"}")
+					.entity("{\"error\":\"Empty String\", \"status\":\"FAIL\"}")
 					.build();
 		}
 		
@@ -83,7 +83,7 @@ public class ItemsResource {
 	@Consumes({ MediaType.APPLICATION_JSON })
 	@Produces({ MediaType.APPLICATION_JSON })
 	@ApiOperation(value = "Create a new Item",
-	notes = "This API creates a new Item if the Itemdescription does not exist"
+	notes = "This API creates a new Item"
 			+ "<p><u>Input Parameters</u><ul><li><b>new Item object</b> is required</li></ul>")
 	@ApiResponses(value = {
 			@ApiResponse(code = 201, message = "Sucess: { Item profile }"),
@@ -129,7 +129,7 @@ public class ItemsResource {
 			
 		}
 		return Response.status(Response.Status.BAD_REQUEST)
-				.entity("{\"error\":\"Could not find Item\", \"status\":\"FAIL\"}")
+				.entity("{\"error\":\"Could not find Items\", \"status\":\"FAIL\"}")
 				.build();		
 	}
 	
@@ -138,11 +138,11 @@ public class ItemsResource {
 	@Path("/CreateItems")
 	@Consumes({ MediaType.APPLICATION_JSON })
 	@Produces({ MediaType.APPLICATION_JSON })
-	@ApiOperation(value = "Create a new Items from List",
+	@ApiOperation(value = "Create new Items from List",
 	notes = "This API creates new Items from a list"
-			+ "<p><u>Input Parameters</u><ul><li><b>new Item object</b> is required</li></ul>")
+			+ "<p><u>Input Parameters</u><ul><li><b>new Items object</b> is required</li></ul>")
 	@ApiResponses(value = {
-			@ApiResponse(code = 201, message = "Sucess: { Item profile }"),
+			@ApiResponse(code = 201, message = "Sucess: { Items profile }"),
 			@ApiResponse(code = 400, message = "Failed: {\"error\":\"error description\", \"status\":\"FAIL\"}")
 	})
 	public Response createItems(@ApiParam(value = "New Item", required = true, defaultValue = "\"{\"description\":\"Ted Nanney\"}\"", allowableValues = "", allowMultiple = false)
@@ -159,7 +159,7 @@ public class ItemsResource {
 			
 		}
 		return Response.status(Response.Status.BAD_REQUEST)
-				.entity("{\"error\":\"Could not create Item\", \"status\":\"FAIL\"}")
+				.entity("{\"error\":\"Could not create Items\", \"status\":\"FAIL\"}")
 				.build();		
 	}
 	
@@ -169,7 +169,7 @@ public class ItemsResource {
 	@Produces({ MediaType.APPLICATION_JSON })
 	@ApiOperation(value = "Create a new Items from CSV File",
 	notes = "This API create new Items from a CSV File"
-			+ "<p><u>Input Parameters</u><ul><li><b>new Item object</b> is required</li></ul>")
+			+ "<p><u>Input Parameters</u><ul><li><b>new File object</b> is required</li></ul>")
 	@ApiResponses(value = {
 			@ApiResponse(code = 201, message = "Sucess: { Item profile }"),
 			@ApiResponse(code = 400, message = "Failed: {\"error\":\"error description\", \"status\":\"FAIL\"}")
@@ -224,7 +224,7 @@ public class ItemsResource {
 	@Path("/DeleteItem/{ItemId}")
 	@Consumes({ MediaType.APPLICATION_JSON })
 	@Produces({ MediaType.APPLICATION_JSON })
-	@ApiOperation(value = "Update Item", 
+	@ApiOperation(value = "Delete Item", 
     notes = "This API deletes the Item")
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Success: {  }"),
     @ApiResponse(code = 400, message = "Failed: {\"error\":\"error description\", \"status\":\"FAIL\"}") })
