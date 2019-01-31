@@ -1,5 +1,6 @@
 package hebdev2.services.v1;
 
+import java.io.File;
 import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
@@ -16,9 +17,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.apache.log4j.Logger;
-import org.json.simple.JSONObject;
-import org.json.simple.JSONValue;
-
 import hebdev2.BusinessManager;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -42,41 +40,6 @@ public class ItemsResource {
         }
     }
 	
-	@GET
-	@Path("/FindItemById/{ItemId}")
-	@Produces(MediaType.APPLICATION_JSON)
-	@ApiOperation(value = "Find Item",
-			notes = "This API retrieves the public information for the Item (Private info is returned if this is the auth Item "
-					+ "<p><u>Input Parameters</u><ul><li><b>ItemId</b> is required</li></ul>")
-	@ApiResponses(value = {
-			@ApiResponse(code = 200, message = "Sucess: { Item profile }"),
-			@ApiResponse(code = 400, message = "Failed: {\"error\":\"error description\", \"status\":\"FAIL\"}")
-	})
-	public Response getItemById(@ApiParam(value = "ItemId", required = true, defaultValue = "23456", allowableValues = "", allowMultiple = false)
-			@PathParam("ItemId") String ItemId) {
-		
-		log.info("ItemsResource::getItemById started ItemId=" + ItemId);
-		
-		allowCrossDomainAccess();
-
-		if (ItemId == null){
-			return Response.status(Response.Status.BAD_REQUEST)
-					.entity("{\"error\":\"Empty ItemId\", \"status\":\"FAIL\"}")
-					.build();
-		}
-		
-		try {
-			Item item = BusinessManager.getInstance().findItem(ItemId);
-			
-			return Response.status(Response.Status.OK).entity(item).build();
-		}
-		catch (Exception e) {
-			
-		}
-		return Response.status(Response.Status.BAD_REQUEST)
-				.entity("{\"error\":\"Could not find Item\", \"status\":\"FAIL\"}")
-				.build();		
-	}
 	
 	@GET
 	@Path("/FindItemsByString/{string}")
@@ -155,6 +118,8 @@ public class ItemsResource {
 		Item item) {
 		
 		log.info("ItemsResource::createItem started");
+		
+		allowCrossDomainAccess();
 		try {
 			Item newItem = BusinessManager.getInstance().addItem(item);
 			return Response.status(Response.Status.CREATED).entity(newItem).build();
@@ -172,7 +137,7 @@ public class ItemsResource {
 	@Consumes({ MediaType.APPLICATION_JSON })
 	@Produces({ MediaType.APPLICATION_JSON })
 	@ApiOperation(value = "Create a new Items from List",
-	notes = "This API creates a new Item if the Itemdescription does not exist"
+	notes = "This API creates new Items from a list"
 			+ "<p><u>Input Parameters</u><ul><li><b>new Item object</b> is required</li></ul>")
 	@ApiResponses(value = {
 			@ApiResponse(code = 201, message = "Sucess: { Item profile }"),
@@ -182,6 +147,8 @@ public class ItemsResource {
 		List<Item> items) {
 		
 		log.info("ItemsResource::createItems started");
+		
+		allowCrossDomainAccess();
 		try {
 			List<Item> itemsToReturn = BusinessManager.getInstance().addItems(items);
 			return Response.status(Response.Status.CREATED).entity(itemsToReturn).build();
@@ -194,48 +161,58 @@ public class ItemsResource {
 				.build();		
 	}
 	
-	//toDo
+	@POST
+	@Path("/CreateItemsFromFile")
+	@Consumes({ MediaType.APPLICATION_JSON })
+	@Produces({ MediaType.APPLICATION_JSON })
+	@ApiOperation(value = "Create a new Items from CSV File",
+	notes = "This API create new Items from a CSV File"
+			+ "<p><u>Input Parameters</u><ul><li><b>new Item object</b> is required</li></ul>")
+	@ApiResponses(value = {
+			@ApiResponse(code = 201, message = "Sucess: { Item profile }"),
+			@ApiResponse(code = 400, message = "Failed: {\"error\":\"error description\", \"status\":\"FAIL\"}")
+	})
+	public Response createItemsFromFile(@ApiParam(value = "File", required = true, defaultValue = "\"{\"description\":\"Ted Nanney\"}\"", allowableValues = "", allowMultiple = false)
+		File file) {
+		
+		log.info("ItemsResource::createItemsFromFile started");
+		
+		allowCrossDomainAccess();
+		try {
+			List<Item> itemsToReturn = BusinessManager.getInstance().addItemsFromFile(file);
+			return Response.status(Response.Status.CREATED).entity(itemsToReturn).build();
+		}
+		catch (Exception e) {
+			
+		}
+		return Response.status(Response.Status.BAD_REQUEST)
+				.entity("{\"error\":\"Could not create Item\", \"status\":\"FAIL\"}")
+				.build();		
+	}
+	
 	
 	@PUT
-	@Path("/UpdateItem/{ItemId}")
+	@Path("/UpdateItem/")
 	@Consumes({ MediaType.APPLICATION_JSON })
 	@Produces({ MediaType.APPLICATION_JSON })
 	@ApiOperation(value = "Update Item", 
     notes = "This API updates the Item")
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Success: { Item profile }"),
     @ApiResponse(code = 400, message = "Failed: {\"error\":\"error description\", \"status\":\"FAIL\"}") })
-	public Response updateItem(@PathParam("ItemId") String itemId, String jsonString) {
+	public Response updateItem(@ApiParam(value = "New Item", required = true, defaultValue = "\"{\"description\":\"Ted Nanney\"}\"", allowableValues = "", allowMultiple = false)
+	Item item) {
 		
-		String description;
-		
+		allowCrossDomainAccess();
 		try {
-			Object obj = JSONValue.parse(jsonString);
-
-			JSONObject jsonObject = (JSONObject) obj;
-			description = (String) jsonObject.get("description");
-
-		}
-		 catch (Exception e) {
-				return Response.status(Response.Status.BAD_REQUEST)
-						.entity("{\"error\":\"Invalid or Missing fields error\", \"status\":\"FAIL\"}")
-						.build();
-			}
-		
-		try {
-			Item updatedItem = BusinessManager.getInstance().updateItemAttribute(
-				itemId, "description", description);
-		
-			return Response.status(Response.Status.OK).entity(updatedItem).build();
+			Item newItem = BusinessManager.getInstance().addItem(item);
+			return Response.status(Response.Status.OK).entity(newItem).build();
 		}
 		catch (Exception e) {
 			
 		}
-		
 		return Response.status(Response.Status.BAD_REQUEST)
-				.entity("{\"error\":\"Could Not Update Item\", \"status\":\"FAIL\"}")
+				.entity("{\"error\":\"Could not update Item\", \"status\":\"FAIL\"}")
 				.build();
-
-
 		
 	}
 
@@ -252,11 +229,13 @@ public class ItemsResource {
 	public Response deleteItem(@PathParam("ItemId") String itemId) {
 		
 		log.info("ItemsResource::deleteItem started ItemId: " + itemId);
+		
+		allowCrossDomainAccess();
 
 		try {
-			BusinessManager.getInstance().deleteItem(itemId);
-		
-			return Response.status(Response.Status.OK).entity("{}").build();
+			
+			List<Item> itemsToReturn = BusinessManager.getInstance().deleteItem(itemId);
+			return Response.status(Response.Status.OK).entity(itemsToReturn).build();
 		}
 		catch (Exception e) {
 			

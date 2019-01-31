@@ -55,6 +55,13 @@ public class DataManager {
 		
 		log.info("DataManager::insertItem started item: " + item);
 		
+		List<Item> items = this.findAllItems();
+		for(Item itemToCheck : items) {
+			if (item.getId().equals(itemToCheck.getId())){
+				this.deleteItem(item.getId());
+			}
+		}
+		
 		//instert item into collection
 		BasicDBObject doc = new BasicDBObject();
 		
@@ -95,44 +102,13 @@ public class DataManager {
 		return item;
 	}
 	
-	
-	// Find Item by Id
-	public Item findItemById(String itemIdString) {
-		
-		log.info("DataManager::findItemById started itemId: " + itemIdString);
-
-		
-		if (itemIdString == null)
-			return null;
-	
-		try {
-			DBObject searchById = new BasicDBObject("_id", new ObjectId(itemIdString));
-
-			DBObject ItemObject = ItemCollection.findOne(searchById);
-
-			if (ItemObject != null) {
-				return mapItemFromdDBObject(ItemObject);
-			} else {
-				return null;
-			}
-
-		} catch (Exception e) {
-			log.error("DBManager::findItemById Exception e=", e);
-		}
-
-		return null;
-	
-	}
-	
 	public List<Item> findAllItems() {
 		
 		log.info("DataManager::findAllItems started");
 
-
 		List<Item> items = new ArrayList<Item>();
 
 		try {
-
 
 			DBCursor cursor = ItemCollection.find();
 
@@ -152,28 +128,10 @@ public class DataManager {
 
 			return null;
 		} catch (Exception e) {
-
+			log.error(e);
 		}
 
 		return null;
-	}
-
-	
-	public Item updateItemAttribute(String ItemId, String attribute,
-			String value) {
-
-		String updateValue = value;
-
-		BasicDBObject doc = new BasicDBObject();
-
-		doc.append("$set", new BasicDBObject().append(attribute, updateValue));
-
-		DBObject searchById = new BasicDBObject("_id", new ObjectId(ItemId));
-
-		ItemCollection.update(searchById, doc);
-
-
-		return findItemById(ItemId);
 	}
 
 	public void deleteCollection() {
@@ -182,11 +140,10 @@ public class DataManager {
 		hebdev2DB.getCollection("Items").drop();
 	}
 
-	public Item deleteItem(String itemId) {
+	public List<Item> deleteItem(String itemId) {
 		
 		log.info("DataManager::deleteItem started itemId: " + itemId);
-
-		
+	
 		List<Item> items = this.findAllItems();
 		
 		if (itemId == null)
@@ -212,7 +169,7 @@ public class DataManager {
 			log.error("DBManager::findItemById Exception e=", e);
 		}
 
-		return null;
+		return this.findAllItems();
 
 	}
 }

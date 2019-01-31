@@ -1,6 +1,12 @@
 package hebdev2;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -20,19 +26,6 @@ public class BusinessManager {
 		
 	}
 	
-public Item findItem(String ItemId) throws Exception {
-		
-		log.info("BusinessManager::findItemById started");
-		
-		Item item = DataManager.getInstance().findItemById(ItemId);
-		
-		if (item == null) {
-			throw new Exception("Nothing Found");
-		}
-		
-		return item;
-	}
-
 	public List<Item> findItems() {
 		
 		log.info("BusinessManager::findAllItems started");
@@ -49,15 +42,9 @@ public Item findItem(String ItemId) throws Exception {
 		return newItem;
 	}
 	
-	public Item updateItemAttribute(String ItemId, String attribute, String value) {
-		
-		return DataManager.getInstance().updateItemAttribute(ItemId, attribute, value);
-		
-	}
-	
-	public void deleteItem(String itemId) {	
+	public List<Item> deleteItem(String itemId) {	
 		log.info("BusinessManager::deleteItem started itemId: " + itemId);
-		DataManager.getInstance().deleteItem(itemId);	
+		return DataManager.getInstance().deleteItem(itemId);
 	}
 
 	public List<Item> findItemsByString(String string) {
@@ -89,6 +76,57 @@ public Item findItem(String ItemId) throws Exception {
 		}
 	
 		return itemsToReturn;
+	}
+
+	public List<Item> addItemsFromFile(File file) {
+		log.info("BusinessManager::addItemsFromFile started");
+
+		BufferedReader reader = null;
+		List<Item> items = new ArrayList<Item>();
+		
+		try {
+			
+		    reader = new BufferedReader(new FileReader(file));
+		    String text = null;
+		    
+		    while ((text = reader.readLine()) != null) {
+		    	
+		    	if(!text.contains("ID")){		
+		    		
+		    		List<String> list = Arrays.asList(text.split(","));
+		    		Item item = new Item();
+		    		item.setId(list.get(0));
+		    		item.setDescription(list.get(1));
+		    		item.setLastSold(list.get(2));
+		    		item.setShelfLife(list.get(3));
+		    		item.setDepartment(list.get(4));
+		    		item.setPrice(list.get(5));
+		    		item.setUnit(list.get(6));
+		    		item.setXFor(list.get(7));
+		    		item.setCost(list.get(8));
+		    		items.add(item);
+		    	}
+		    }
+		    
+		} catch (FileNotFoundException e) {
+		    e.printStackTrace();
+		    log.error(e);
+		    
+		} catch (IOException e) {
+		    e.printStackTrace();
+		    log.error(e);
+		    
+		} finally {
+		    try {
+		        if (reader != null) {
+		            reader.close();
+		        }
+		    } catch (IOException e) {
+		    	log.error(e);
+		    }
+		}
+		
+		return this.addItems(items);
 	}
 
 }

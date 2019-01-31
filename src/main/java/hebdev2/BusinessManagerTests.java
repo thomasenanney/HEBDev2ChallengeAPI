@@ -45,6 +45,40 @@ public class BusinessManagerTests extends TestCase {
 		}
     }
 	
+	public void testInstertExistingItem() {
+    	Item item = new Item();
+		item.setId("753542");
+		item.setDescription("banana");
+		item.setLastSold("9/5/2017");
+		item.setShelfLife("4d");
+		item.setDepartment("Produce");
+		item.setPrice("$2.99");
+		item.setUnit("lb");
+		item.setXFor("1");
+		item.setCost("$0.44");
+		BusinessManager.getInstance().addItem(item);
+		
+		Item item2 = new Item();
+		item2.setId("753542");
+		item2.setDescription("banana2");
+		item2.setLastSold("9/5/2017");
+		item2.setShelfLife("4d");
+		item2.setDepartment("Produce");
+		item2.setPrice("$2.99");
+		item2.setUnit("lb");
+		item2.setXFor("1");
+		item2.setCost("$0.44");
+		
+		BusinessManager.getInstance().addItem(item2);
+    	
+    	List<Item> items = BusinessManager.getInstance().findItems();
+		Assert.assertTrue(items.size() == 1);
+		for (Item returnedItem : items){
+			Assert.assertTrue(this.compareItems(returnedItem, item2));
+			Assert.assertFalse(this.compareItems(returnedItem, item));
+		}
+    }
+	
 	public void testDeleteItem() {
     	Item item = new Item();
 		item.setId("753542");
